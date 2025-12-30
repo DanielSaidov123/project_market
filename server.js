@@ -1,0 +1,36 @@
+import express from "express";
+
+const app = express();
+const PORT = process.env.PORT || 8000;
+
+import { getDb, initDb } from "./config/db.js";
+
+// Body parser
+app.use(express.json());
+
+// Attaches db connection to req object
+app.use(async (req, res, next) => {
+  req.db = await getDb();
+  next();
+});
+
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.url}`);
+  next();
+});
+
+// ================== ROUTES ===================
+
+app.get("/", async (req, res) => {
+  res.json({
+    message: "Welcome to MongoDB Todo List API",
+    version: "1.0.0",
+  });
+});
+
+
+app.listen(PORT, async () => {
+  await initDb();
+  console.log(`Server is running on port ${PORT}...`);
+});
+
